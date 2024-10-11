@@ -26,9 +26,8 @@ class FileController extends Controller
         // dd( $request->file('upload_file') );    
         
         // $request->file('upload_file')->storeAs('avatars', $files['name'] . time() . '.'. $files['extension'] );
-        $path = $request->file('upload_file')->storePubliclyAs('avatars', $files['basename'] . time() . '.'. $files['extension'] );
+        $path = $request->file('upload_file')->storePubliclyAs('public/avatars', $files['basename'] . time() . '.'. $files['extension'] );
         
         dd($path);
-        
     }
 }

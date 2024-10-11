@@ -11,6 +11,7 @@ use App\Http\Controllers\Auth\ProfileController;
 Route::get('fileupload',[ FileController::class, 'fileupload'])->name('files.fileupload');
 Route::post('fileupload',[ FileController::class, 'store'])->name('files.store');
 
+
 Route::group(['middleware' => 'guest'], function(){
    Route::get('/register', [AuthController::class, 'register'])->name('register');
    Route::post('/register', [AuthController::class, 'registerPost'])->name('register');
