@@ -48,10 +48,18 @@ Run Migrations: Migrate the database to create the necessary tables.
 php artisan migrate --seed
 ```
 
+Create the symbolic link: In order to access user upload image publically, create symbolic link
+
+```
+php artisan storage:link
+
+``````
+
 Run the Application: Start the Laravel development server to run the app locally.
 
 ```
 php artisan serve
+
 ``````
 
 Access the Application: Open a web browser and visit the following URL:
