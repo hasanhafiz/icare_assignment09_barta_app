@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\File;
 class FileController extends Controller
 {
     public function fileupload() {
-       
         return view('profiles.fileupload');
     }    
     

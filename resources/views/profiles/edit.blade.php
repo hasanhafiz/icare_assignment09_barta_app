@@ -45,8 +45,8 @@
                             <label for="photo" class="block text-sm font-medium leading-6 text-gray-900">Photo</label>
                             <div class="mt-2 flex items-center gap-x-3">
                                 <input class="hidden" type="file" name="profile_picture" id="avatar" />                                                             
-                                <img class="h-12 w-12 rounded-full" src="{{ asset(auth()->user()->profile_picture) }}"
-                                alt="" />
+                                <img class="h-12 w-12 rounded-full" src="{{ auth()->user()->profile_picture_url }}"
+                                alt="{{ auth()->user()->username }}" /> 
                                 <label for="avatar">
                                     <div
                                         class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">

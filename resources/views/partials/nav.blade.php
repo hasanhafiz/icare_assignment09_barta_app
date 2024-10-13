@@ -10,6 +10,8 @@
                         <h2 class="font-bold text-2xl">Barta</h2>
                     </a>
                 </div>
+                
+                               
             </div>
             <div class="hidden sm:ml-6 sm:flex gap-2 sm:items-center">
                 @auth()
@@ -21,11 +23,11 @@
                                 id="user-menu-button" aria-expanded="false" aria-haspopup="true">
                                 <span class="sr-only">Open user menu</span>
                                 <img class="h-8 w-8 rounded-full"
-                                    src="https://avatars.githubusercontent.com/u/831997"
-                                    alt="Ahmed Shamim Hasan Shaon" />
+                                    src="{{ auth()->user()->profile_picture_url }}"
+                                    alt="{{ auth()->user()->username }}" />
                             </button>
                         </div>
-
+                        
                         <!-- Dropdown menu -->
                         <div x-show="open" @click.away="open = false"
                             class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"

@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Models\Post;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\User;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class ProfileController extends Controller
 {
@@ -15,8 +18,8 @@ class ProfileController extends Controller
     public function index()
     {
         
-        
-        return view('profiles.index');
+        $posts_count = Post::where('user_id', auth()->id() )->count();
+        return view('profiles.index', ['posts_count' => $posts_count]);
     }
     
     /**
@@ -49,6 +52,9 @@ class ProfileController extends Controller
     public function edit(string $id)
     {
         $user = User::find( $id );
+        
+        // dd( $user );
+        
         return view('profiles.edit', $user);
     }
     
@@ -62,7 +68,7 @@ class ProfileController extends Controller
             'lastname' => ['required', 'min:3', 'max:50'],
             'bio' => ['required', 'min:10', 'max:500'],
             'email' => ['required', 'email'],
-            'profile_picture' => ['required', 'mimes:jpg,png', 'max:1024']
+            'profile_picture' => ['nullable', 'image', 'mimes:jpg,png,jpeg', 'max:1024']
         ]);
         
         // If no errors occured, save user profile data.
@@ -71,6 +77,10 @@ class ProfileController extends Controller
         $user->lastname = $request->lastname;
         $user->bio = $request->bio;
         
+        if ( $user->password ) {
+            $user->password = Hash::make( $request->password );
+        }
+        
         $file = $request->file('profile_picture');
         if ( isset( $file ) ) {
             
@@ -78,25 +88,26 @@ class ProfileController extends Controller
             // Storage::delete('file.jpg');            
             
             $file_extension = $file->extension();
-            $file_name = auth()->user()->id . '.' . $file_extension;
+            $file_name = 'img_'. auth()->user()->id . '.' . $file_extension;
             
-            if ( Storage::exists( 'storage/avatars/' . $file_name ) ) {
+            // if ( Storage::exists( 'public' . $file_name ) ) {
                 // dd ('exists');
-                Storage::delete('storage/avatars/' . $file_name );  
+                // Storage::delete('storage/avatars/' . $file_name );  
+                Storage::disk('public')->delete( $file_name );
                 
                 // dd( $user ); 
-            }            
+            // }
+            // $path = $request->file('profile_picture')->storeAs('avatars', $file_name, 'public'  ); // same as without 3rd params
+            $path = $request->file('profile_picture')->storeAs('avatars', $file_name  );
             
-            $user->profile_picture = $request->file('profile_picture')->storePubliclyAs('storage/avatars', $file_name );                
+            // dd( $path );
+            $user->profile_picture = $path;                 
         }
         
+        // dd ($user);
         
-       // $user->password = Hash::make( $request->password );
         $user->save();
         return redirect()->route('profiles.index')->with('status', 'User profile updated Successfully.');
-        
-        // dump( $user );
-        // dd( $request );
     }
 
     /**

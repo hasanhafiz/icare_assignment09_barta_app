@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Tag;
 use App\Models\Post;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\StorePostRequest;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\UpdatePostRequest;
 
 class PostController extends Controller
@@ -16,6 +18,9 @@ class PostController extends Controller
     public function index()
     {
         $posts = Post::with(['user'])->orderBy('created_at', 'DESC')->get();
+        
+        // dd( $posts );
+        
         return view('posts.index', compact('posts'));
     }
     
@@ -33,11 +38,33 @@ class PostController extends Controller
     public function store(StorePostRequest $request)
     {        
         // Validate the request
-        $validated = $request->validated();            
-        Post::create($validated);
+        $validated = $request->validated();
         
-        $posts = Post::with(['user'])->orderBy('created_at', 'DESC')->get();                
-        return redirect()->route('home', ['posts' => $posts]);
+        // dump( $validated );
+        // dd( $request->file('image') );
+        $file = $request->file('image');
+        if ( isset( $file ) ) {
+            
+            // if same file exists, delete it first
+            // Storage::delete('file.jpg');            
+            
+            $file_extension = $file->extension();
+            $file_name = 'img_'. Str::random(10) . '.' . $file_extension;  
+            
+            // Delete           
+            // Storage::disk('public')->delete( $file_name );
+            
+            // $path = $request->file('profile_picture')->storeAs('avatars', $file_name, 'public'  ); // same as without 3rd params
+            $path = $request->file('image')->storeAs('posts', $file_name, 'public' );
+            $validated['image'] = $path;
+        }
+        
+        Post::create($validated);
+        $posts = Post::with(['user'])->orderBy('created_at', 'DESC')->get(); 
+        
+        // Redirect to the intended page or to a default route (e.g., '/home')
+        return redirect()->intended('/home');               
+        // return redirect()->route('home', ['posts' => $posts]);
     }
     
     /**
@@ -64,7 +91,6 @@ class PostController extends Controller
         // Validate the request
         $validated = $request->validated();
         $post->update( $validated );
-            
         $posts = Post::with(['user'])->orderBy('created_at', 'DESC')->get();
         return redirect()->route('posts.index', ['posts' => $posts]);        
     }
